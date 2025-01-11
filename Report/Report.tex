@@ -1,0 +1,70 @@
+\documentclass[a4paper,12pt]{report}
+
+\usepackage[english,greek]{babel}   % For Greek and English language
+\usepackage{kmath,kerkis}           % Kerkis font
+\usepackage{listings}               % For adding C++ code
+\usepackage{xcolor}                 % For custom colors
+\usepackage{graphicx}               % For including images
+\usepackage{amsmath}                % For advanced math formatting
+\usepackage{hyperref}               % For creating hyperlinks
+\usepackage{geometry}               % To set page margins
+\usepackage{subfig}                 % For subfigures
+\usepackage{titlesec}               % For customizing chapter titles
+\geometry{a4paper, margin=1in}      % Set page margins
+
+\titleformat
+{\chapter}
+[block]
+{\normalfont\bfseries\huge}
+{\thechapter\quad}
+{0.5em}
+{}
+[
+\vspace{1ex}
+\noindent\rule{\textwidth}{0.4pt}
+]
+
+\lstdefinestyle{verilog}{
+    language=Verilog,
+    basicstyle=\ttfamily\small,                     % Use small monospaced font
+    keywordstyle=\color{blue},                      % Blue for keywords
+    commentstyle=\color{green},                     % Green for comments
+    stringstyle=\color{red},                        % Red for strings
+    morekeywords={module,endmodule,always,if,else}, % Additional Verilog keywords
+    numbers=left,                                   % Line numbers on the left
+    numberstyle=\tiny\color{gray},                  % Style for line numbers
+    stepnumber=1,                                   % Line numbers every 1 line
+    numbersep=5pt,                                  % Distance between numbers and code
+    backgroundcolor=\color{white},                  % Background color for code block
+    showstringspaces=false,                         % Don't show space in strings
+    frame=single,                                   % Frame around the code
+    captionpos=b,                                   % Position of caption (bottom)
+    breaklines=true,                                % Automatically break long lines
+    breakatwhitespace=true,                         % Break lines at whitespace
+}
+
+\def\tl{\textlatin}
+\def\tg{\textgreek}
+
+\begin{document}
+
+\title{\textbf{Ψηφιακά Συστήματα \tl{Hardware} σε Υψηλά Επίπεδα Λογικής 1} \\ Αναφορά Εργασίας}
+\author{\textbf{Σάββας Τζανέτης} \\
+\textbf{10889} \\
+\href{mailto:empty@auth.gr}{\tl{stzanetis@ece.auth.gr}}}
+\maketitle
+
+\tableofcontents
+
+\chapter*{Εισαγωγή}
+    \large Αυτή η αναφορά είναι μέρος της εργασίας του μαθήματος \textbf{Ψηφιακά Συστήματα \tl{Hardware} σε Υψηλά
+    Επίπεδα Λογικής 1} του \textbf{Αριστοτέλιου πανεπιστημίου Θεσσαλονίκης}. Σε αυτή την εργασία, μας ζητήθηκε
+    να υλοποιήσουμε μια αριθμομηχανή, καθώς και έναν επεξεργαστή \textbf{\tl{RISC-V}} με την βοήθεια των παρακάτω
+    ασκήσεων σε γλώσσα \textbf{\tl{Verilog}}. Στην αναφορά θα γίνει μια σύντομη επεξήγηση των ασκήσεων, σχολιασμός
+    του κώδικα και παρουσίαση των ζητούμενων διαγραμμάτων και κυματομορφών των προσομοιώσεων.
+\chapter{Πρώτη Άσκηση}
+\chapter{Δεύτερη Άσκηση}
+\chapter{Τρίτη Άσκηση}
+\chapter{Τέταρτη Άσκηση}
+\chapter{Πέμπτη Άσκηση}
+\end{document}
