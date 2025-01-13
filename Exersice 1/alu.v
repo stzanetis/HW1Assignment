@@ -30,5 +30,4 @@ module alu (
 
 	// Assign zero if needed
 	assign zero = (result == 32'b0) ? 1'b1 : 1'b0;
-
 endmodule

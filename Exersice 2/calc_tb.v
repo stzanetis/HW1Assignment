@@ -3,7 +3,7 @@ module calc_tb;
     reg [15:0] sw;
     wire [15:0] led;
 
-    calc dut (
+    calc my_calc (
         .clk(clk),
      	.btnc(btnc),
         .btnl(btnl),
@@ -76,6 +76,5 @@ module calc_tb;
         #100;
         $stop;
     end
-
 endmodule
 

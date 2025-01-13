@@ -13,7 +13,7 @@ module regfile #( parameter DATAWIDTH = 32 ) (
     integer i;
     initial begin
         for (i = 0; i < 32; i = i + 1)
-            registers[i] = {DATAWIDTH{1'b0}};
+            registers[i] <= {DATAWIDTH{1'b0}};
     end
 
     always @(posedge clk) begin
@@ -32,5 +32,4 @@ module regfile #( parameter DATAWIDTH = 32 ) (
         else
             readData2 <= registers[readReg2];
     end
-
 endmodule

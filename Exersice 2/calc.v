@@ -15,7 +15,7 @@ module calc (
 	wire[31:0] op1_extended = {{16{accumulator[15]}}, accumulator};
 	wire[31:0] op2_extended = {{16{sw[15]}}, sw};
 
-	alu alu (
+	alu my_alu (
 		.op1(op1_extended),
         .op2(op2_extended),
         .alu_op(alu_op),
@@ -23,7 +23,7 @@ module calc (
 		.zero(zero)
 	);
 
-    calc_enc encoder (
+    calc_enc my_encoder (
         .btnc(btnc),
 	    .btnl(btnl),
         .btnr(btnr),
@@ -40,5 +40,4 @@ module calc (
 
 	// Update LED with the current accumulator value
     assign led = accumulator;
-
 endmodule

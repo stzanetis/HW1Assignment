@@ -37,5 +37,4 @@ module calc_enc (
     and(w35, w33, btnr);
     and(w36, w32, w34);
     or(alu_op[3], w35, w36);
-
 endmodule
