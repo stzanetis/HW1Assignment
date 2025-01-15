@@ -49,7 +49,7 @@
 \maketitle
 
 \chapter*{Εισαγωγή}
-    \large Αυτή η αναφορά είναι μέρος της εργασίας του μαθήματος \textbf{Ψηφιακά Συστήματα \tl{Hardware} σε Υψηλά Επίπεδα Λογικής 1} του \textbf{Αριστοτέλιου πανεπιστημίου Θεσσαλονίκης}. \\
+    \large Αυτή η αναφορά είναι μέρος της εργασίας του μαθήματος \textbf{Ψηφιακά Συστήματα \tl{Hardware} σε Χαμηλά Επίπεδα Λογικής 1} του \textbf{Αριστοτέλιου πανεπιστημίου Θεσσαλονίκης}. \\
     Σε αυτή την εργασία, μας ζητήθηκε να υλοποιήσουμε μια αριθμομηχανή, καθώς και έναν επεξεργαστή \textbf{\tl{RISC-V}} με την βοήθεια των παρακάτω ασκήσεων σε γλώσσα \textbf{\tl{Verilog}}. \\
     Στην αναφορά θα γίνει μια σύντομη επεξήγηση των ασκήσεων, σχολιασμός του κώδικα και παρουσίαση των ζητούμενων διαγραμμάτων και κυματομορφών των προσομοιώσεων.
 \chapter{Πρώτη Άσκηση}
@@ -144,5 +144,88 @@ calc_enc encoder (
     \large Σε αυτή την άσκηση της εργασίας, πρέπει να υλοποιήσουμε ένα \textbf{αρχείο καταχωρητών}, το οποίο θα είναι υπεύθυνο για την αποθήκευση των τιμών των καταχωρητών που θα χρησιμοποιούνται από τον \textbf{\tl{RISC-V}} επεξεργαστή μας.\\ \\
     Στην την υλοποίηση του αυτού του \tl{module}, η πρώτη διεργασία είναι η αρχικοποίηση των καταχωρητών με την τιμή μηδέν, εξασφαλίζοντας μια γνωστή αρχική κατάσταση. Η λειτουργία εγγραφής συγχρονίζεται με το σήμα ρολογιού και τα δεδομένα εγγράφονται στον καθορισμένο καταχωρητή εάν το σήμα εγγραφής είναι ενεργό και η διεύθυνση του καταχωρητή δεν είναι μηδέν. Επίσης, στην υλοποίηση χρησιμοποιήθηκαν \textbf{\tl{Non-Blocking}} εντολές, αποτρέποντας την εσφαλμένη χρίση των καταχωρητών με την καταγραφή λανθασμένων τιμών στην περίπτωση που χρησιμοποιηθεί η ίδια διεύθυνση για εγγραφή και ανάγνωση.
 \chapter{Τέταρτη Άσκηση}
+    \large Στόχος της άσκησης 4 είναι να σχεδιάσουμε ένα \textbf{\tl{datapath}} \tl{module}, μια μονάδα διαδρομής δεδομένων. Η μονάδα αυτί, μαζί με το \tl{module} της επόμενης άσκησης, καθώς και τη μνήμη εντολών και δεδομένων που μας δίνονται έτοιμες, θα ολοκληρώσουν την λειτουργιά του \textbf{\tl{RISC-V}} επεξεργαστή που θέλουμε να υλοποιήσουμε. \\ \\
+    Η άσκηση αυτή, χωρίζεται σε πέντε τμήματα όπως θα δούμε και στο παρακάτω διάγραμμα. Πιο συγκεκριμένα τα τμήματα αυτά είναι:
+     \begin{itemize}
+        \item Το \tl{Program Counter (PC)}
+            \vspace{0.5cm}
+            \begin{lstlisting}[style=verilog]
+always @(posedge clk) begin 
+    if(rst)
+        PC <= INITIAL_PC;
+    else if(loadPC) begin 
+        if(PCSrc)
+            PC <= sum_pc_i;
+        else
+            PC <= PC + 4;
+    end
+end
+            \end{lstlisting}
+        \item Το \tl{Register File} που θα πρέπει να αρχικοποιήσουμε.
+            \vspace{0.5cm}
+            \begin{lstlisting}[style=verilog]
+regfile my_regfile (
+    .clk(clk),
+    .write(RegWrite),
+    .readReg1(instr[19:15]),
+    .readReg2(instr[24:20]),
+    .writeReg(instr[11:7]),
+    .writeData(write_back_data),
+    .readData1(alu_op1),
+    .readData2(alu_op2)
+);
+            \end{lstlisting}
+        \item \tl{Immediate Generation}.
+            \vspace{0.5cm}
+            \begin{lstlisting}[style=verilog]
+assign input_i_addi = instr[31:20];
+assign output_i_addi = {{20{input_i_addi[11]}}, input_i_addi};
+assign input_i_sw = {instr[31:25], instr[11:7]};
+assign output_i_sw = {{20{input_i_sw[11]}}, input_i_sw};
+assign input_i_beq = {instr[31], instr[7], instr[30:25], instr[11:8]};
+assign output_i_beq = {{19{input_i_beq[11]}}, input_i_beq, 1'b0};
+            \end{lstlisting}
+        \item Το \tl{ALU} που έχουμε υλοποιήσει στη πρώτη άσκηση και θα πρέπει να αρχικοποιήσουμε.
+            \vspace{0.5cm}
+            \begin{lstlisting}[style=verilog]
+alu my_alu (
+	.op1(alu_op1),
+    .op2(mux_result_op2),
+    .alu_op(ALUCtrl),
+    .result(alu_result),
+	.zero(Zero)
+);
+            \end{lstlisting}
+        \item Το \tl{Branch Target}.
+            \begin{lstlisting}[style=verilog]
+assign left_add = output_i_beq << 1;
+assign sum_pc_i = left_add + PC;
+            \end{lstlisting}
+        \item \tl{Write Back}.
+            \begin{lstlisting}[style=verilog]
+assign write_back_data = MemToReg ? dReadData : alu_result;
+            \end{lstlisting}
+    \end{itemize}
+    \newpage
+    Επιπλέον, αξίζει να σημειωθεί πως σε αρκετές περιπτώσεις, για την δημιουργία πολυπλεκτών, χρησιμοποιήσαμε εντολές \tl{assign} αντί ενός \tl{always block}. Αυτό έγινε για λόγους απλοποίησης, αλλά και για την αποτροπή σφαλμάτων λόγω καθυστερήσεων με την χρήση \tl{always block}.
+    \vspace{0.5 cm}
+    \begin{figure}[h!]
+        \centering
+        \fbox{\includegraphics[width=0.85\textwidth]{41.png}}
+        \caption{}
+    \end{figure}
 \chapter{Πέμπτη Άσκηση}
+    \large Στην πέμπτη και τελευταία άσκηση, θα υλοποιήσουμε το τελευταίο στοιχείο του επεξεργαστή μας, την μονάδα έλεγχου, καθώς και θα υλοποιήσουμε ένα testbench για τον έλεγχο των λειτουργιών του. Θα δημιουργήσουμε δυο αρχεία, το \textbf{\tl{top\_proc.v}} και το \textbf{\tl{top\_proc\_tb.v}}. \\ \\
+    Για το αρχειο \textbf{\tl{top\_proc.v}}, έπρεπε και πάλι να υλοποιήσουμε 7 τμήματα. Το πιο σημαντικό από αυτά όμως ήταν η υλοποίηση ενός \textbf{\tl{FSM (Finite State Machine)}}, για το οποίο έπρεπε να υλοποιήσουμε 3 \tl{Procedural Blocks}. Την Αποθήκευση κατάστασης, την επόμενη κατάσταση και τέλος την κατάσταση εξόδου. Τα 3 αυτά \tl{block} υλοποιήθηκαν χρησιμοποιώντας διάφορα \tl{always block}, δημιουργώντας ουσιαστικά διάφορους πολυπλέκτες για κάθε μια από τις πιθανές εντολές της εισόδου \textbf{\tl{instr}}.\\ \\
+    Στο \textbf{\tl{testbench}} μας, συνδέουμε τα αρχεία \textbf{\tl{rom.v}} και \textbf{\tl{ram.v}} τα οποία μας έχουν δοθεί και δημιουργούμε ένα ρολόι για την εκτέλεση των απαραίτητων προσομοιώσεων. Στο αρχείο \textbf{\tl{rom\_bytes.data}} βρίσκονται οι εντολές \textbf{\tl{32-bit}} που θα πρέπει να 
+    εκτελέσει ο επεξεργαστής για να επαληθεύει η\\
+    \begin{figure}[h!]
+        \centering
+        \fbox{\includegraphics[width=1\textwidth]{51.png}}
+        \caption{}
+    \end{figure}
+    ορθή λειτουργία του.
+    
+    Οι παραπάνω κυματομορφες αποτελούν ένα μικρό κομμάτι των κυματομορφών που παράχθηκαν από την προσομοίωση για λόγους διευκόλυνσης.
+    
 \end{document}
